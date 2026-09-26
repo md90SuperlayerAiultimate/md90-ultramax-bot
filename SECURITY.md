@@ -1,17 +1,26 @@
 # Security Policy
 
+## Supported Versions
+
+| Version | Supported |
+|---------|:---------:|
+| latest  | ✅        |
+
+## Reporting a Vulnerability
+
+If you discover a security vulnerability, please report it responsibly:
+
+1. **Do NOT open a public issue.**
+2. Use the [GitHub Security Advisory](https://github.com/HKUDS/Vibe-Trading/security/advisories/new) to report privately.
+3. Include steps to reproduce, potential impact, and any suggested fixes.
+
+We will acknowledge your report within **5 business days** and work with you to resolve the issue.
+
 ## Scope
 
-Repository ini berisi cockpit riset dan paper-trading. Jalur live broker order, wallet signing, custody, withdrawal, dan external execution tetap disabled.
+This policy applies to the [HKUDS/Vibe-Trading](https://github.com/HKUDS/Vibe-Trading) repository.
 
-## Jangan kirim secret
+## Disclosure
 
-Jangan pernah memasukkan API key, API secret, private key, wallet seed, OAuth secret, database URL, atau token provider ke source, issue, pull request, screenshot, ZIP, atau log. Gunakan environment secret resmi pada hosting/provider bila integrasi read-only diperlukan.
-
-## Melaporkan vulnerability
-
-Laporkan vulnerability secara private melalui GitHub Security Advisories bila tersedia. Jika fitur tersebut belum tersedia pada paket repository, jangan mempublikasikan credential atau proof-of-concept sensitif; hubungi owner repository melalui kanal privat yang terverifikasi.
-
-## Quality gates
-
-Perubahan wajib melewati CI test/typecheck/build dan secret scan. Perubahan dependency harus melewati Dependency Review pada pull request. Branch protection belum dapat diaktifkan pada private repository GitHub Free; status ini didokumentasikan dan tidak boleh dianggap sebagai kontrol aktif.
+- Please do not publicly disclose the vulnerability until we have released a fix.
+- We will credit reporters in the release notes (unless you prefer anonymity).
