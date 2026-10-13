@@ -2,22 +2,14 @@
 """MD90 Superlayer AI Unified Runtime
 
 Single-process launcher for the MD90 trading / sniper / AI bot ecosystem.
+This file merges the terminal UI, local API surface, config discovery, shell
+bridge, and repo module inspection into one local runtime.
 
-This file consolidates the project into one local runtime that exposes:
-- a browser-based terminal UI
-- a FastAPI JSON API
-- project metadata and JSON config discovery
-- a shell bridge for local command execution
-- a unified startup surface for the existing CLI/API project modules
-
-Primary launch:
+Launch:
     python md90superlayerAiautotrade.py
 
 Then open:
     http://127.0.0.1:8899
-
-This runtime is intentionally localhost-only and should only be used on a trusted
-local machine. Do not expose it publicly without auth and firewall hardening.
 """
 
 from __future__ import annotations
@@ -27,10 +19,7 @@ import json
 import os
 import platform
 import shlex
-import signal
 import subprocess
-import sys
-import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -46,8 +35,6 @@ SHELL = os.environ.get("MD90_SHELL") or (
     "powershell.exe" if platform.system().lower() == "windows" else os.environ.get("SHELL", "/bin/bash")
 )
 PROJECT_ROOT = Path(__file__).resolve().parent
-CLI_MODULE = PROJECT_ROOT / "cli.py"
-API_MODULE = PROJECT_ROOT / "api_server.py"
 
 app = FastAPI(title=APP_NAME, version="1.0.0")
 app.add_middleware(
@@ -59,7 +46,7 @@ app.add_middleware(
 )
 
 TERMINAL_SESSIONS: Dict[str, subprocess.Popen[Any]] = {}
-TERMINAL_LOCK = threading.Lock()
+STARTED_PROCESSES: Dict[str, subprocess.Popen[Any]] = {}
 
 
 def _safe_relpath(path: Path) -> str:
@@ -69,13 +56,22 @@ def _safe_relpath(path: Path) -> str:
         return path.name
 
 
-def _discover_json_configs(base: Path) -> List[Dict[str, Any]]:
-    """Find JSON files under the project for runtime/autoload discovery."""
-    discovered: List[Dict[str, Any]] = []
-    if not base.exists():
-        return discovered
+def _discover_repo_files(pattern: str) -> List[str]:
+    out: List[str] = []
+    for path in sorted(PROJECT_ROOT.rglob(pattern), key=lambda p: str(p).lower()):
+        if path.is_file():
+            val = _safe_relpath(path)
+            if val not in out:
+                out.append(val)
+    return out
 
-    search_roots = [base]
+
+def _discover_json_configs(base: Path) -> List[Dict[str, Any]]:
+    """Return JSON files discovered under the project root."""
+    if not base.exists():
+        return []
+
+    roots: List[Path] = [base]
     for child in sorted(base.iterdir(), key=lambda p: p.name.lower()):
         if child.is_dir() and child.name.lower() in {
             "config",
@@ -88,11 +84,13 @@ def _discover_json_configs(base: Path) -> List[Dict[str, Any]]:
             "auto",
             "presets",
             "schemas",
+            "json",
         }:
-            search_roots.append(child)
+            roots.append(child)
 
     seen: set[str] = set()
-    for root in search_roots:
+    results: List[Dict[str, Any]] = []
+    for root in roots:
         try:
             for path in sorted(root.rglob("*.json"), key=lambda p: str(p).lower()):
                 if not path.is_file():
@@ -101,24 +99,35 @@ def _discover_json_configs(base: Path) -> List[Dict[str, Any]]:
                 if rel in seen:
                     continue
                 seen.add(rel)
-                discovered.append({
+                results.append({
                     "name": path.name,
                     "path": rel,
                     "size": path.stat().st_size,
                 })
         except Exception:
             continue
-    return discovered
+    return results
 
 
-def _repo_modules() -> Dict[str, Any]:
-    status = {
-        "cli": CLI_MODULE.exists(),
-        "api_server": API_MODULE.exists(),
-        "cli_path": str(CLI_MODULE) if CLI_MODULE.exists() else None,
-        "api_server_path": str(API_MODULE) if API_MODULE.exists() else None,
+def _discover_python_modules() -> List[str]:
+    return _discover_repo_files("*.py")
+
+
+def _build_runtime_summary() -> Dict[str, Any]:
+    py_files = _discover_python_modules()
+    json_files = _discover_json_configs(PROJECT_ROOT)
+    summary = {
+        "name": APP_NAME,
+        "project_root": str(PROJECT_ROOT),
+        "platform": platform.platform(),
+        "host": HOST,
+        "port": PORT,
+        "python_files_count": len(py_files),
+        "json_files_count": len(json_files),
+        "python_files": py_files[:200],
+        "json_files": [item["path"] for item in json_files[:200]],
     }
-    return status
+    return summary
 
 
 INDEX_HTML = """
@@ -134,9 +143,9 @@ INDEX_HTML = """
     :root {
       --bg: #04070a;
       --panel: #0b1418;
-      --line: rgba(121, 240, 208, 0.3);
+      --line: rgba(121, 240, 208, 0.35);
       --text: #edf7ff;
-      --muted: #96dfe8;
+      --muted: #9bdfe8;
       --accent: #79f0d0;
       --cyan: #6ed6ff;
       --gold: #ffc857;
@@ -144,8 +153,10 @@ INDEX_HTML = """
     }
     * { box-sizing: border-box; }
     html, body {
-      margin: 0; height: 100%; background: radial-gradient(circle at top, #0d1b22, #04070a 40%);
-      color: var(--text); font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      margin: 0; height: 100%;
+      background: radial-gradient(circle at top, #0d1b22 0%, #04070a 38%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
     body { padding: 18px; }
     .app {
@@ -156,7 +167,7 @@ INDEX_HTML = """
       border: 1px solid var(--line);
       border-radius: 20px;
       overflow: hidden;
-      background: rgba(7, 13, 15, 0.9);
+      background: rgba(7, 13, 15, 0.92);
       box-shadow: 0 25px 80px rgba(0,0,0,0.45);
     }
     .sidebar {
@@ -168,27 +179,73 @@ INDEX_HTML = """
       gap: 12px;
     }
     .brand {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid var(--line);
       padding-bottom: 10px;
     }
-    .brand h1 { margin: 0; font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); }
-    .live { padding: 5px 8px; border: 1px solid rgba(121,240,208,0.4); background: rgba(121,240,208,0.08); border-radius: 999px; color: var(--accent); font-size: 10px; letter-spacing: .14em; }
+    .brand h1 {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .live {
+      padding: 5px 8px;
+      border: 1px solid rgba(121,240,208,0.4);
+      background: rgba(121,240,208,0.08);
+      border-radius: 999px;
+      color: var(--accent);
+      font-size: 10px;
+      letter-spacing: .14em;
+    }
     .chips { display: flex; flex-direction: column; gap: 8px; }
     .chip {
-      border: 1px solid rgba(121,240,208,0.22); background: rgba(10,18,18,0.7); border-radius: 10px;
-      padding: 10px 12px; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+      border: 1px solid rgba(121,240,208,0.22);
+      background: rgba(10,18,18,0.7);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
-    .hint { color: rgba(236,246,255,0.72); font-size: 11px; letter-spacing: .04em; }
+    .hint {
+      color: rgba(236,246,255,0.72);
+      font-size: 11px;
+      letter-spacing: .04em;
+    }
     .main { display: flex; flex-direction: column; padding: 12px; gap: 10px; min-width: 0; }
     .topbar {
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(18,26,30,0.9); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
-      color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(18,26,30,0.9);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
     }
     .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-    .tab { padding: 6px 9px; border: 1px solid rgba(110,214,255,0.3); border-radius: 7px; background: rgba(110,214,255,0.06); }
-    .terminal-wrap { flex: 1; background: rgba(5,12,14,0.98); border: 1px solid var(--line); border-radius: 14px; position: relative; overflow: hidden; }
+    .tab {
+      padding: 6px 9px;
+      border: 1px solid rgba(110,214,255,0.3);
+      border-radius: 7px;
+      background: rgba(110,214,255,0.06);
+    }
+    .terminal-wrap {
+      flex: 1;
+      background: rgba(5,12,14,0.98);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+    }
     #terminal { width: 100%; height: 100%; min-height: 520px; }
     .xterm { height: 100%; }
   </style>
@@ -206,7 +263,7 @@ INDEX_HTML = """
         <div class="chip">JSON Autoload</div>
         <div class="chip">Bot Orchestrator</div>
       </div>
-      <div class="hint">Localhost-only, trusted use only. Do not expose to public internet without auth.</div>
+      <div class="hint">Localhost-only and trusted use only. Do not expose to public internet without auth.</div>
     </aside>
     <main class="main">
       <div class="topbar">
@@ -249,7 +306,7 @@ INDEX_HTML = """
 
     term.open(document.getElementById('terminal'));
     term.write('MD90 Superlayer AI Unified Runtime\r\n');
-    term.write('Browser terminal online. Local shell bridge ready.\r\n');
+    term.write('Operator console online. Local shell bridge ready.\r\n');
     term.write('$ ');
 
     term.onData((data) => {
@@ -305,7 +362,7 @@ async def health() -> JSONResponse:
 
 @app.get("/api/status")
 async def status() -> JSONResponse:
-    modules = _repo_modules()
+    summary = _build_runtime_summary()
     return JSONResponse({
         "name": APP_NAME,
         "description": "MD90 unified runtime: terminal + API + config loader + shell bridge",
@@ -316,10 +373,8 @@ async def status() -> JSONResponse:
             "api_runtime": True,
             "json_autoload": True,
             "shell_bridge": True,
-            "repo_cli": modules["cli"],
-            "repo_api_server": modules["api_server"],
         },
-        "json_configs": _discover_json_configs(PROJECT_ROOT),
+        "summary": summary,
         "security": {
             "localhost_only": True,
             "warning": "Do not expose this application publicly without authentication and firewall hardening.",
@@ -331,13 +386,9 @@ async def status() -> JSONResponse:
 async def repo_info() -> JSONResponse:
     return JSONResponse({
         "root": str(PROJECT_ROOT),
-        "modules": _repo_modules(),
-        "json_configs": _discover_json_configs(PROJECT_ROOT),
-        "python_files": [
-            _safe_relpath(p)
-            for p in sorted(PROJECT_ROOT.rglob("*.py"), key=lambda p: str(p).lower())
-            if p.name not in {"__init__.py"}
-        ],
+        "python_files": _discover_python_modules()[:500],
+        "json_configs": _discover_json_configs(PROJECT_ROOT)[:500],
+        "runtime": _build_runtime_summary(),
     })
 
 
@@ -345,30 +396,94 @@ async def repo_info() -> JSONResponse:
 async def commands() -> JSONResponse:
     return JSONResponse({
         "commands": [
-            {"name": "launch_shell", "description": "Open a live shell in the web terminal"},
-            {"name": "health", "description": "Check server health"},
-            {"name": "status", "description": "Inspect unified runtime state"},
-            {"name": "repo", "description": "Inspect discovered repo modules and config files"},
-            {"name": "python cli.py", "description": "Run the legacy CLI if available"},
-            {"name": "python api_server.py", "description": "Run the legacy API server if available"},
+            {"name": "health", "description": "Check live runtime health"},
+            {"name": "status", "description": "Inspect unified runtime metadata"},
+            {"name": "repo", "description": "Inspect repo modules and JSON autodiscovery"},
+            {"name": "launch api_server.py", "description": "Start the legacy API server"},
+            {"name": "launch cli.py", "description": "Start the legacy CLI if present"},
+            {"name": "exec command", "description": "Execute a local command via the runtime shell bridge"},
         ]
     })
+
+
+@app.post("/api/exec")
+async def api_exec(request: Request) -> JSONResponse:
+    """Execute a shell command locally with localhost-only safety."""
+    body = await request.json()
+    command = str(body.get("command", "")).strip()
+    if not command:
+        return JSONResponse({"status": "error", "message": "Empty command"}, status_code=400)
+
+    try:
+        completed = subprocess.run(
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            cwd=str(PROJECT_ROOT),
+        )
+        return JSONResponse({
+            "status": "ok" if completed.returncode == 0 else "error",
+            "returncode": completed.returncode,
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+        })
+    except Exception as exc:
+        return JSONResponse({"status": "error", "message": str(exc)}, status_code=500)
+
+
+@app.post("/api/launch")
+async def api_launch(request: Request) -> JSONResponse:
+    """Launch a legacy module (CLI or API server) as a background process."""
+    body = await request.json()
+    target = str(body.get("target", "")).strip().lower()
+    if target not in {"cli", "cli.py", "api_server", "api_server.py"}:
+        return JSONResponse({"status": "error", "message": "Unsupported target"}, status_code=400)
+
+    if target in {"cli", "cli.py"}:
+        script = PROJECT_ROOT / "cli.py"
+        name = "cli"
+    else:
+        script = PROJECT_ROOT / "api_server.py"
+        name = "api_server"
+
+    if not script.exists():
+        return JSONResponse({"status": "error", "message": f"Missing script: {script.name}"}, status_code=404)
+
+    try:
+        proc = subprocess.Popen(
+            [sys.executable, str(script)],
+            cwd=str(PROJECT_ROOT),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.DEVNULL,
+            text=True,
+        )
+        STARTED_PROCESSES[name] = proc
+        return JSONResponse({
+            "status": "started",
+            "target": name,
+            "pid": proc.pid,
+            "script": script.name,
+        })
+    except Exception as exc:
+        return JSONResponse({"status": "error", "message": str(exc)}, status_code=500)
 
 
 @app.websocket("/ws")
 async def terminal_socket(websocket: WebSocket) -> None:
     await websocket.accept()
-    with TERMINAL_LOCK:
-        process = subprocess.Popen(
-            [SHELL],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=False,
-            bufsize=0,
-            start_new_session=True,
-        )
-        TERMINAL_SESSIONS[str(id(process))] = process
+    process = subprocess.Popen(
+        [SHELL],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=False,
+        bufsize=0,
+        start_new_session=True,
+    )
+    TERMINAL_SESSIONS[str(id(process))] = process
 
     async def pump_process_to_ws() -> None:
         try:
@@ -427,67 +542,13 @@ async def terminal_socket(websocket: WebSocket) -> None:
                 pass
 
 
-@app.post("/api/exec")
-async def api_exec(request: Request) -> JSONResponse:
-    """Execute a shell command locally with a safe localhost-only policy."""
-    body = await request.json()
-    command = body.get("command") or ""
-    if not command.strip():
-        return JSONResponse({"status": "error", "message": "Empty command"}, status_code=400)
-
-    try:
-        completed = subprocess.run(
-            command,
-            shell=True,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            cwd=str(PROJECT_ROOT),
-        )
-        return JSONResponse({
-            "status": "ok" if completed.returncode == 0 else "error",
-            "returncode": completed.returncode,
-            "stdout": completed.stdout,
-            "stderr": completed.stderr,
-        })
-    except Exception as exc:
-        return JSONResponse({"status": "error", "message": str(exc)}, status_code=500)
-
-
-def _create_aliases() -> List[str]:
-    aliases = [
-        "python md90superlayerAiautotrade.py",
-        "curl http://127.0.0.1:8899/api/health",
-        "python cli.py --help",
-        "python api_server.py --help",
-    ]
-    return aliases
-
-
-@app.get("/api/aliases")
-async def aliases() -> JSONResponse:
-    return JSONResponse({"aliases": _create_aliases()})
-
-
-def _start_local_runtime() -> None:
-    """Optional helper: if repo modules exist, expose them as simple command aliases."""
-    try:
-        if CLI_MODULE.exists():
-            print(f"[*] Legacy CLI module detected: {CLI_MODULE}")
-        if API_MODULE.exists():
-            print(f"[*] Legacy API module detected: {API_MODULE}")
-    except Exception:
-        pass
-
-
 if __name__ == "__main__":
     import uvicorn
 
     print("=" * 64)
     print(f"  {APP_NAME}")
-    print(f"  Local web terminal + unified runtime for MD90")
+    print(f"  MD90 unified runtime: web terminal + API + shell + repo scanning")
     print(f"  URL: http://{HOST}:{PORT}")
     print(f"  Project root: {PROJECT_ROOT}")
     print("=" * 64)
-    _start_local_runtime()
     uvicorn.run(app, host=HOST, port=PORT, log_level="info")
