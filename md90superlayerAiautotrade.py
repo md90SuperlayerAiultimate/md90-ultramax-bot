@@ -1,29 +1,22 @@
 #!/usr/bin/env python3
 """md90superlayerAiautotrade
 
-All-in-one web terminal + operator console for the MD90 Superlayer AI / Vibe Trading stack.
+All-in-one MD90 Superlayer AI / AutoTrade runtime.
 
-This file is intentionally self-contained so a developer can run a single app that:
-- serves the Web UI from a single Python process,
-- exposes a terminal emulator via WebSocket,
-- exposes a lightweight health/status API,
-- is safe-by-default for localhost-only operation.
+This single-file app bundles the following into one process:
+- web terminal UI (xterm.js, browser-based console)
+- localhost-safe FastAPI server
+- JSON config autodiscovery and status endpoint
+- bot runtime shell bridge
+- live status/health endpoints
 
-It consolidates the architecture implied by the repository: frontend (React/Vite),
-backend (FastAPI/Python agent runtime), and terminal session launcher into a single
-entry point without needing to chase multiple ZIP archives separately.
+Use:
+    python md90superlayerAiautotrade.py
+    open http://127.0.0.1:8899
 
-Usage:
-  python md90superlayerAiautotrade.py
-
-Then open:
-  http://127.0.0.1:8899
-
-Environment variables:
-  MD90_HOST      default 127.0.0.1
-  MD90_PORT      default 8899
-  MD90_SHELL     default bash (or powershell.exe on Windows)
-  MD90_TITLE     optional UI title override
+Safety:
+    This app defaults to 127.0.0.1 only and is intended for trusted local use.
+    Do not expose publicly without authentication/network hardening.
 """
 
 from __future__ import annotations
@@ -32,10 +25,10 @@ import asyncio
 import json
 import os
 import platform
-import signal
 import subprocess
 import sys
-from typing import Any
+from pathlib import Path
+from typing import Any, Dict, List
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -47,6 +40,7 @@ PORT = int(os.environ.get("MD90_PORT", "8899"))
 SHELL = os.environ.get("MD90_SHELL") or (
     "powershell.exe" if platform.system().lower() == "windows" else os.environ.get("SHELL", "/bin/bash")
 )
+RUNNER_ROOT = Path(__file__).resolve().parent
 
 app = FastAPI(title=APP_NAME, version="1.0.0")
 app.add_middleware(
@@ -59,6 +53,37 @@ app.add_middleware(
 
 TERMINAL_SESSIONS: dict[str, subprocess.Popen[Any]] = {}
 
+
+def _discover_json_configs(base: Path) -> List[Dict[str, Any]]:
+    """Return JSON files discovered under the repo root and config directories."""
+    discovered: List[Dict[str, Any]] = []
+    if not base.exists():
+        return discovered
+
+    search_roots = [base]
+    for root in list(base.iterdir()):
+        if root.is_dir() and root.name.lower() in {"config", "configs", "bot", "bots", "data", "runtime", "assets", "auto"}:
+            search_roots.append(root)
+
+    seen: set[str] = set()
+    for root in search_roots:
+        try:
+            for path in sorted(root.rglob("*.json")):
+                if path.is_file():
+                    rel = str(path.relative_to(base)).replace('\\', '/')
+                    if rel in seen:
+                        continue
+                    seen.add(rel)
+                    discovered.append({
+                        "name": path.name,
+                        "path": rel,
+                        "size": path.stat().st_size,
+                    })
+        except Exception:
+            pass
+    return discovered
+
+
 INDEX_HTML = """
 <!doctype html>
 <html lang="en">
@@ -66,253 +91,131 @@ INDEX_HTML = """
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
-  <link rel="icon" href="data:;base64,=" />
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm-addon-fit.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.1.0/css/xterm.css" />
   <style>
     :root {
       --bg: #04070a;
       --panel: #0b1418;
-      --panel-2: #101c22;
-      --line: rgba(146, 244, 215, 0.22);
-      --text: #dfeffd;
-      --muted: #7ccfc3;
+      --line: rgba(121, 240, 208, 0.33);
+      --text: #ecf6ff;
+      --muted: #9adce2;
       --accent: #79f0d0;
-      --accent-2: #68b8ff;
-      --warn: #ffc857;
+      --cyan: #6bd7ff;
       --danger: #ff7387;
+      --gold: #ffc857;
     }
     * { box-sizing: border-box; }
     html, body {
-      margin: 0;
-      height: 100%;
-      background: radial-gradient(circle at top, #0b1d24, #04070a 48%);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
+      margin: 0; height: 100%; background: radial-gradient(circle at top, #0d1b22 0%, #04070a 40%); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
-    body {
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      padding: 18px;
-    }
-    .shell {
+    body { padding: 18px; }
+    .app {
       width: min(1500px, 100%);
-      min-height: 85vh;
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      border: 1px solid var(--line);
-      background: rgba(12, 18, 20, 0.8);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 0 40px rgba(121, 240, 208, 0.04);
+      min-height: 88vh;
+      display: grid; grid-template-columns: 300px 1fr; border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+      background: rgba(8, 12, 14, 0.9); box-shadow: 0 25px 80px rgba(0,0,0,0.4);
     }
     .sidebar {
-      background: linear-gradient(180deg, rgba(10,16,18,0.96), rgba(15, 24, 27, 0.96));
-      border-right: 1px solid var(--line);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 18px 16px;
+      background: linear-gradient(180deg, rgba(10,18,20,0.96), rgba(14,24,27,0.96)); border-right: 1px solid var(--line); padding: 16px 14px; display: flex; flex-direction: column; gap: 12px;
     }
     .brand {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 6px 12px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 10px;
     }
-    .brand h1 {
-      font-size: 13px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin: 0;
-      color: var(--accent);
-      font-weight: 700;
+    .brand h1 { margin: 0; font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); }
+    .live { padding: 5px 8px; border: 1px solid rgba(121,240,208,0.4); background: rgba(121,240,208,0.08); border-radius: 999px; color: var(--accent); font-size: 10px; letter-spacing: .14em; }
+    .chips { display: flex; flex-direction: column; gap: 8px; }
+    .chip { border: 1px solid rgba(121,240,208,0.24); background: rgba(10,18,18,0.7); border-radius: 10px; padding: 10px 12px; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .main { display: flex; flex-direction: column; padding: 12px; gap: 10px; min-width: 0; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center; background: rgba(18,26,30,0.9); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
     }
-    .status-pill {
-      padding: 4px 8px;
-      border: 1px solid rgba(121, 240, 208, 0.35);
-      border-radius: 999px;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      color: var(--accent);
-      background: rgba(121,240,208,0.08);
-    }
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .stack .item {
-      padding: 10px 12px;
-      border: 1px solid rgba(121, 240, 208, 0.2);
-      background: rgba(10, 18, 18, 0.72);
-      border-radius: 10px;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .main {
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width: 0;
-    }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(14, 24, 28, 0.75);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .toolbar .tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .tab {
-      border: 1px solid rgba(104,184,255,0.4);
-      border-radius: 8px;
-      padding: 6px 8px;
-      color: var(--muted);
-      background: rgba(104,184,255,0.08);
-    }
-    .terminal-wrap {
-      flex: 1;
-      min-height: 0;
-      position: relative;
-      background: rgba(5, 12, 14, 0.98);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    #terminal {
-      width: 100%;
-      height: 100%;
-      min-height: 480px;
-    }
-    .xterm {
-      height: 100%;
-    }
-    .xterm .xterm-viewport {
-      background: rgba(5,12,14,1) !important;
-    }
-    .hint {
-      margin-top: 6px;
-      font-size: 11px;
-      color: rgba(223,239,253,0.72);
-      letter-spacing: 0.04em;
-    }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab { padding: 6px 9px; border: 1px solid rgba(107,215,255,0.3); border-radius: 7px; background: rgba(107,215,255,0.06); }
+    .terminal-wrap { flex: 1; background: rgba(5,12,14,0.98); border: 1px solid var(--line); border-radius: 14px; position: relative; overflow: hidden; }
+    #terminal { width: 100%; height: 100%; min-height: 520px; }
+    .xterm { height: 100%; }
+    .hint { color: rgba(236,246,255,0.7); font-size: 11px; letter-spacing: .04em; }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <h1>{title}</h1>
-        <span class="status-pill">LIVE</span>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>{title}</h1>
+      <span class="live">LIVE</span>
+    </div>
+    <div class="chips">
+      <div class="chip">Web Terminal</div>
+      <div class="chip">AutoTrade Engine</div>
+      <div class="chip">JSON Loader</div>
+      <div class="chip">Bot Orchestrator</div>
+    </div>
+    <div class="hint">Localhost-only by default. Safe shell execution requires trusted local usage.</div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <span>Operator Console</span>
+      <div class="tabs">
+        <span class="tab">MD90</span>
+        <span class="tab">AutoTrade</span>
+        <span class="tab">Runtime</span>
       </div>
-      <div class="stack">
-        <div class="item">Web Terminal</div>
-        <div class="item">Agent Runtime</div>
-        <div class="item">AI Trading Core</div>
-        <div class="item">Bot Orchestration</div>
-      </div>
-      <div class="hint">
-        Localhost-only by default. Safe shell execution requires trusted use only.
-      </div>
-    </aside>
+    </div>
+    <div class="terminal-wrap">
+      <div id="terminal"></div>
+    </div>
+  </main>
+</div>
 
-    <main class="main">
-      <div class="toolbar">
-        <span>Operator Console</span>
-        <div class="tabs">
-          <span class="tab">root</span>
-          <span class="tab">md90</span>
-          <span class="tab">agent</span>
-        </div>
-      </div>
-      <div class="terminal-wrap">
-        <div id="terminal"></div>
-      </div>
-    </main>
-  </div>
+<script>
+  const term = new Terminal({
+    cursorBlink: true,
+    fontFamily: 'JetBrains Mono, Consolas, monospace',
+    fontSize: 14,
+    theme: {
+      foreground: '#ecf6ff',
+      background: '#050c0e',
+      cursor: '#79f0d0',
+      black: '#0d1b22',
+      red: '#ff7387',
+      green: '#7ae8b5',
+      yellow: '#ffc857',
+      blue: '#6bd7ff',
+      magenta: '#c5a7ff',
+      cyan: '#79f0d0',
+      white: '#ecf6ff'
+    },
+    scrollback: 2000
+  });
+  term.open(document.getElementById('terminal'));
+  term.write('MD90 Superlayer AI AutoTrade\r\n');
+  term.write('Web terminal online. Localhost-safe mode enabled.\r\n');
+  term.write('$ ');
 
-  <script>
-    const { Terminal } = window.Terminal;
-    const term = new Terminal({
-      cursorBlink: true,
-      fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
-      fontSize: 14,
-      theme: {
-        foreground: '#dfeffd',
-        background: '#050c0e',
-        cursor: '#79f0d0',
-        black: '#1b2530',
-        red: '#ff7387',
-        green: '#7ae8b5',
-        yellow: '#ffc857',
-        blue: '#68b8ff',
-        magenta: '#c5a7ff',
-        cyan: '#79f0d0',
-        white: '#dfeffd'
-      },
-      scrollback: 2000
-    });
+  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
 
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
+  term.onData(data => socket.send(JSON.stringify({ type: 'input', data })));
+  socket.onmessage = ev => {
+    try {
+      const msg = JSON.parse(ev.data);
+      if (msg.type === 'output') term.write(msg.data);
+    } catch {
+      term.write(String(ev.data));
+    }
+  };
 
-    term.open(document.getElementById('terminal'));
-    term.write('Welcome to md90superlayerAiautotrade\r\n');
-    term.write('Session started. Type commands below.\r\n');
-    term.write('$ ');
-
-    term.onData((data) => {
-      socket.send(JSON.stringify({ type: 'input', data }));
-    });
-
-    window.addEventListener('resize', () => {
-      const rows = Math.max(20, Math.floor(term._core._renderService._renderRows || 30));
-      const cols = Math.max(80, Math.floor(term.cols || 120));
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: 'resize', cols, rows }));
-      }
-    });
-
-    socket.addEventListener('open', () => {
-      const rows = term.rows || 30;
-      const cols = term.cols || 120;
-      socket.send(JSON.stringify({ type: 'resize', cols, rows }));
-    });
-
-    socket.addEventListener('message', (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-        if (msg.type === 'output') {
-          term.write(msg.data);
-        }
-      } catch (err) {
-        term.write(String(event.data));
-      }
-    });
-
-    socket.addEventListener('close', () => {
-      term.write('\r\n\n[session closed]\r\n');
-    });
-  </script>
+  socket.onclose = () => term.write('\r\n\n[session closed]\r\n');
+  window.addEventListener('resize', () => {
+    const rows = term.rows || 30;
+    const cols = term.cols || 120;
+    if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'resize', cols, rows }));
+  });
+  socket.onopen = () => {
+    socket.send(JSON.stringify({ type: 'resize', cols: term.cols || 120, rows: term.rows || 30 }));
+  };
+</script>
 </body>
 </html>
 """.format(title=APP_NAME)
@@ -324,7 +227,7 @@ async def index() -> HTMLResponse:
 
 
 @app.get("/api/health")
-async def health() -> JSONResponse:
+async def api_health() -> JSONResponse:
     return JSONResponse({
         "status": "ok",
         "service": APP_NAME,
@@ -337,30 +240,39 @@ async def health() -> JSONResponse:
 
 
 @app.get("/api/status")
-async def status() -> JSONResponse:
+async def api_status() -> JSONResponse:
+    json_configs = _discover_json_configs(RUNNER_ROOT)
     return JSONResponse({
         "name": APP_NAME,
-        "description": "All-in-one auto-trade web terminal and operator console",
+        "description": "MD90 Superlayer AI AutoTrade — single entrypoint runtime",
         "capabilities": [
-            "web terminal",
-            "agent shell access",
-            "health checks",
-            "status endpoint",
-            "localhost access",
+            "web-terminal",
+            "json-autoload",
+            "bot-runtime",
+            "health-monitoring",
+            "shell-session",
         ],
+        "json_configs": json_configs,
         "security": {
             "localhost_only": True,
-            "prompt": "Only run on trusted local machines. Do not expose to the public internet without auth and network hardening.",
+            "warning": "Do not expose this endpoint to the public internet without authentication and firewall restrictions.",
         },
+    })
+
+
+@app.get("/api/config")
+async def api_config() -> JSONResponse:
+    return JSONResponse({
+        "root": str(RUNNER_ROOT),
+        "configs": _discover_json_configs(RUNNER_ROOT),
     })
 
 
 @app.websocket("/ws")
 async def terminal_socket(websocket: WebSocket) -> None:
     await websocket.accept()
-    shell_cmd = SHELL
     process = subprocess.Popen(
-        [shell_cmd],
+        [SHELL],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -373,19 +285,15 @@ async def terminal_socket(websocket: WebSocket) -> None:
     async def pump_process_to_ws() -> None:
         try:
             while process.poll() is None:
-                chunk = process.stdout.read1(4096) if process.stdout is not None else b""
+                if process.stdout is None:
+                    break
+                chunk = process.stdout.read1(4096)
                 if not chunk:
                     await asyncio.sleep(0.02)
                     continue
                 await websocket.send_text(json.dumps({"type": "output", "data": chunk.decode("utf-8", errors="replace")}))
         except Exception:
             pass
-        finally:
-            try:
-                if process.stdout is not None:
-                    process.stdout.close()
-            except Exception:
-                pass
 
     async def pump_ws_to_process() -> None:
         try:
@@ -394,8 +302,9 @@ async def terminal_socket(websocket: WebSocket) -> None:
                 message = json.loads(raw) if raw.strip().startswith("{") else {"type": "input", "data": raw}
                 if message.get("type") == "resize":
                     continue
+                data = message.get("data", "")
                 if process.stdin is not None:
-                    process.stdin.write(message.get("data", "").encode("utf-8"))
+                    process.stdin.write(data.encode("utf-8"))
                     process.stdin.flush()
         except WebSocketDisconnect:
             pass
@@ -408,13 +317,13 @@ async def terminal_socket(websocket: WebSocket) -> None:
             except Exception:
                 pass
 
-    task_read = asyncio.create_task(pump_process_to_ws())
-    task_write = asyncio.create_task(pump_ws_to_process())
+    read_task = asyncio.create_task(pump_process_to_ws())
+    write_task = asyncio.create_task(pump_ws_to_process())
 
     try:
-        await asyncio.gather(task_read, task_write)
+        await asyncio.gather(read_task, write_task)
     finally:
-        for task in (task_read, task_write):
+        for task in (read_task, write_task):
             if not task.done():
                 task.cancel()
         try:
@@ -431,4 +340,5 @@ async def terminal_socket(websocket: WebSocket) -> None:
 if __name__ == "__main__":
     import uvicorn
 
+    print(f"[*] Starting {APP_NAME} on http://{HOST}:{PORT}")
     uvicorn.run(app, host=HOST, port=PORT, log_level="info")
