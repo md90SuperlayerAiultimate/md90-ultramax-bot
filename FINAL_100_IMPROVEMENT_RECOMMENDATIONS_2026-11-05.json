@@ -1,0 +1,907 @@
+{
+  "generatedAt": "2026-11-05",
+  "authority": "PAPER_SHADOW_ONLY",
+  "count": 100,
+  "items": [
+    {
+      "id": 1,
+      "category": "Data integrity",
+      "title": "Checksum Pinning",
+      "action": "Implement checksum pinning as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers checksum pinning; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 2,
+      "category": "Data integrity",
+      "title": "Utc Normalization",
+      "action": "Implement UTC normalization as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers UTC normalization; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 3,
+      "category": "Data integrity",
+      "title": "Duplicate Candle Detection",
+      "action": "Implement duplicate candle detection as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers duplicate candle detection; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 4,
+      "category": "Data integrity",
+      "title": "Gap Detection",
+      "action": "Implement gap detection as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers gap detection; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 5,
+      "category": "Data integrity",
+      "title": "Schema Versioning",
+      "action": "Implement schema versioning as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers schema versioning; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 6,
+      "category": "Data integrity",
+      "title": "Source Lineage",
+      "action": "Implement source lineage as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers source lineage; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 7,
+      "category": "Data integrity",
+      "title": "Freshness Gates",
+      "action": "Implement freshness gates as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers freshness gates; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 8,
+      "category": "Data integrity",
+      "title": "Quarantine Invalid Rows",
+      "action": "Implement quarantine invalid rows as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers quarantine invalid rows; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 9,
+      "category": "Data integrity",
+      "title": "Manifest Diff",
+      "action": "Implement manifest diff as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers manifest diff; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 10,
+      "category": "Data integrity",
+      "title": "Replay Immutability",
+      "action": "Implement replay immutability as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers replay immutability; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 11,
+      "category": "Market data",
+      "title": "Provider Health Matrix",
+      "action": "Implement provider health matrix as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers provider health matrix; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 12,
+      "category": "Market data",
+      "title": "Websocket Reconnect Telemetry",
+      "action": "Implement websocket reconnect telemetry as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers websocket reconnect telemetry; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 13,
+      "category": "Market data",
+      "title": "Rest Backfill",
+      "action": "Implement REST backfill as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers REST backfill; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 14,
+      "category": "Market data",
+      "title": "Venue Clock Drift",
+      "action": "Implement venue clock drift as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers venue clock drift; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 15,
+      "category": "Market data",
+      "title": "Spread Quality",
+      "action": "Implement spread quality as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers spread quality; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 16,
+      "category": "Market data",
+      "title": "Outlier Rejection",
+      "action": "Implement outlier rejection as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers outlier rejection; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 17,
+      "category": "Market data",
+      "title": "Symbol Mapping",
+      "action": "Implement symbol mapping as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers symbol mapping; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 18,
+      "category": "Market data",
+      "title": "Fx Session Calendar",
+      "action": "Implement FX session calendar as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers FX session calendar; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 19,
+      "category": "Market data",
+      "title": "Metals Rollover",
+      "action": "Implement metals rollover as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers metals rollover; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 20,
+      "category": "Market data",
+      "title": "Stale Ui Badge",
+      "action": "Implement stale UI badge as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers stale UI badge; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P0",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 21,
+      "category": "Strategy research",
+      "title": "Walk-Forward Splits",
+      "action": "Implement walk-forward splits as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers walk-forward splits; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 22,
+      "category": "Strategy research",
+      "title": "Oos Lock",
+      "action": "Implement OOS lock as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers OOS lock; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 23,
+      "category": "Strategy research",
+      "title": "Feature Registry",
+      "action": "Implement feature registry as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers feature registry; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 24,
+      "category": "Strategy research",
+      "title": "Indicator Parity",
+      "action": "Implement indicator parity as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers indicator parity; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 25,
+      "category": "Strategy research",
+      "title": "Regime Cohorts",
+      "action": "Implement regime cohorts as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers regime cohorts; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 26,
+      "category": "Strategy research",
+      "title": "Session Cohorts",
+      "action": "Implement session cohorts as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers session cohorts; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 27,
+      "category": "Strategy research",
+      "title": "Ablation Tests",
+      "action": "Implement ablation tests as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers ablation tests; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 28,
+      "category": "Strategy research",
+      "title": "Factor Correlation",
+      "action": "Implement factor correlation as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers factor correlation; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 29,
+      "category": "Strategy research",
+      "title": "Signal Confidence Calibration",
+      "action": "Implement signal confidence calibration as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers signal confidence calibration; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 30,
+      "category": "Strategy research",
+      "title": "Strategy Version Registry",
+      "action": "Implement strategy version registry as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers strategy version registry; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 31,
+      "category": "Risk controls",
+      "title": "Daily Loss Cap",
+      "action": "Implement daily loss cap as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers daily loss cap; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 32,
+      "category": "Risk controls",
+      "title": "Exposure Cap",
+      "action": "Implement exposure cap as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers exposure cap; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 33,
+      "category": "Risk controls",
+      "title": "Correlation Cap",
+      "action": "Implement correlation cap as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers correlation cap; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 34,
+      "category": "Risk controls",
+      "title": "Leverage Ceiling",
+      "action": "Implement leverage ceiling as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers leverage ceiling; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 35,
+      "category": "Risk controls",
+      "title": "Stop Distance Validation",
+      "action": "Implement stop distance validation as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers stop distance validation; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 36,
+      "category": "Risk controls",
+      "title": "Slippage Shock",
+      "action": "Implement slippage shock as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers slippage shock; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 37,
+      "category": "Risk controls",
+      "title": "Fee Shock",
+      "action": "Implement fee shock as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers fee shock; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 38,
+      "category": "Risk controls",
+      "title": "Kill Switch",
+      "action": "Implement kill switch as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers kill switch; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 39,
+      "category": "Risk controls",
+      "title": "Cooldown",
+      "action": "Implement cooldown as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers cooldown; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 40,
+      "category": "Risk controls",
+      "title": "Manual Approval Ttl",
+      "action": "Implement manual approval TTL as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers manual approval TTL; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 41,
+      "category": "Execution simulation",
+      "title": "Partial Fills",
+      "action": "Implement partial fills as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers partial fills; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 42,
+      "category": "Execution simulation",
+      "title": "Rejects",
+      "action": "Implement rejects as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers rejects; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 43,
+      "category": "Execution simulation",
+      "title": "Latency Model",
+      "action": "Implement latency model as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers latency model; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 44,
+      "category": "Execution simulation",
+      "title": "Duplicate Command",
+      "action": "Implement duplicate command as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers duplicate command; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 45,
+      "category": "Execution simulation",
+      "title": "Cancel/Replace Simulation",
+      "action": "Implement cancel/replace simulation as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers cancel/replace simulation; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 46,
+      "category": "Execution simulation",
+      "title": "Multi-Tp Accounting",
+      "action": "Implement multi-TP accounting as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers multi-TP accounting; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 47,
+      "category": "Execution simulation",
+      "title": "Trailing Stop Audit",
+      "action": "Implement trailing stop audit as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers trailing stop audit; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 48,
+      "category": "Execution simulation",
+      "title": "Position Netting",
+      "action": "Implement position netting as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers position netting; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 49,
+      "category": "Execution simulation",
+      "title": "Reconciliation Invariants",
+      "action": "Implement reconciliation invariants as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers reconciliation invariants; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 50,
+      "category": "Execution simulation",
+      "title": "Paper Broker Chaos Tests",
+      "action": "Implement paper broker chaos tests as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers paper broker chaos tests; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 51,
+      "category": "Learning and ML",
+      "title": "Feature Store",
+      "action": "Implement feature store as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers feature store; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 52,
+      "category": "Learning and ML",
+      "title": "Label Policy",
+      "action": "Implement label policy as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers label policy; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 53,
+      "category": "Learning and ML",
+      "title": "Leakage Test",
+      "action": "Implement leakage test as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers leakage test; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 54,
+      "category": "Learning and ML",
+      "title": "Baseline Model",
+      "action": "Implement baseline model as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers baseline model; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 55,
+      "category": "Learning and ML",
+      "title": "Calibration Curve",
+      "action": "Implement calibration curve as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers calibration curve; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 56,
+      "category": "Learning and ML",
+      "title": "Drift Monitor",
+      "action": "Implement drift monitor as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers drift monitor; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 57,
+      "category": "Learning and ML",
+      "title": "Champion Challenger",
+      "action": "Implement champion challenger as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers champion challenger; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 58,
+      "category": "Learning and ML",
+      "title": "Deterministic Seed",
+      "action": "Implement deterministic seed as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers deterministic seed; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 59,
+      "category": "Learning and ML",
+      "title": "Rollback Model",
+      "action": "Implement rollback model as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers rollback model; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 60,
+      "category": "Learning and ML",
+      "title": "Human Approval Promotion",
+      "action": "Implement human approval promotion as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers human approval promotion; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 61,
+      "category": "Monte Carlo and tuning",
+      "title": "Bootstrap Returns",
+      "action": "Implement bootstrap returns as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers bootstrap returns; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 62,
+      "category": "Monte Carlo and tuning",
+      "title": "Block Bootstrap",
+      "action": "Implement block bootstrap as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers block bootstrap; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 63,
+      "category": "Monte Carlo and tuning",
+      "title": "Regime Resampling",
+      "action": "Implement regime resampling as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers regime resampling; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 64,
+      "category": "Monte Carlo and tuning",
+      "title": "Confidence Intervals",
+      "action": "Implement confidence intervals as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers confidence intervals; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 65,
+      "category": "Monte Carlo and tuning",
+      "title": "Stress Paths",
+      "action": "Implement stress paths as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers stress paths; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 66,
+      "category": "Monte Carlo and tuning",
+      "title": "Parameter Stability",
+      "action": "Implement parameter stability as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers parameter stability; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 67,
+      "category": "Monte Carlo and tuning",
+      "title": "Sensitivity Grid",
+      "action": "Implement sensitivity grid as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers sensitivity grid; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 68,
+      "category": "Monte Carlo and tuning",
+      "title": "Multiple Testing Penalty",
+      "action": "Implement multiple testing penalty as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers multiple testing penalty; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 69,
+      "category": "Monte Carlo and tuning",
+      "title": "Oos Tuning",
+      "action": "Implement OOS tuning as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers OOS tuning; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 70,
+      "category": "Monte Carlo and tuning",
+      "title": "Report Provenance",
+      "action": "Implement report provenance as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers report provenance; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P1",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 71,
+      "category": "Observability",
+      "title": "Correlation Trace",
+      "action": "Implement correlation trace as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers correlation trace; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 72,
+      "category": "Observability",
+      "title": "Structured Logs",
+      "action": "Implement structured logs as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers structured logs; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 73,
+      "category": "Observability",
+      "title": "Metrics Snapshots",
+      "action": "Implement metrics snapshots as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers metrics snapshots; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 74,
+      "category": "Observability",
+      "title": "Provider Alerts",
+      "action": "Implement provider alerts as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers provider alerts; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 75,
+      "category": "Observability",
+      "title": "Exception Severity",
+      "action": "Implement exception severity as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers exception severity; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 76,
+      "category": "Observability",
+      "title": "Audit Export",
+      "action": "Implement audit export as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers audit export; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 77,
+      "category": "Observability",
+      "title": "Signed Manifest",
+      "action": "Implement signed manifest as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers signed manifest; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 78,
+      "category": "Observability",
+      "title": "Health Endpoint",
+      "action": "Implement health endpoint as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers health endpoint; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 79,
+      "category": "Observability",
+      "title": "Runbook Links",
+      "action": "Implement runbook links as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers runbook links; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 80,
+      "category": "Observability",
+      "title": "Retention Policy",
+      "action": "Implement retention policy as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers retention policy; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 81,
+      "category": "UI and UX",
+      "title": "Instrument Search",
+      "action": "Implement instrument search as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers instrument search; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 82,
+      "category": "UI and UX",
+      "title": "Timeframe Sync",
+      "action": "Implement timeframe sync as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers timeframe sync; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 83,
+      "category": "UI and UX",
+      "title": "Keyboard Navigation",
+      "action": "Implement keyboard navigation as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers keyboard navigation; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 84,
+      "category": "UI and UX",
+      "title": "Empty States",
+      "action": "Implement empty states as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers empty states; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 85,
+      "category": "UI and UX",
+      "title": "Mobile Density",
+      "action": "Implement mobile density as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers mobile density; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 86,
+      "category": "UI and UX",
+      "title": "Color Semantics",
+      "action": "Implement color semantics as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers color semantics; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 87,
+      "category": "UI and UX",
+      "title": "Evidence Drawer",
+      "action": "Implement evidence drawer as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers evidence drawer; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 88,
+      "category": "UI and UX",
+      "title": "Risk Explainer",
+      "action": "Implement risk explainer as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers risk explainer; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 89,
+      "category": "UI and UX",
+      "title": "Export Progress",
+      "action": "Implement export progress as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers export progress; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 90,
+      "category": "UI and UX",
+      "title": "Bilingual Copy",
+      "action": "Implement bilingual copy as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers bilingual copy; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 91,
+      "category": "Governance and delivery",
+      "title": "Branch Rules",
+      "action": "Implement branch rules as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers branch rules; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 92,
+      "category": "Governance and delivery",
+      "title": "Dependency Review",
+      "action": "Implement dependency review as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers dependency review; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 93,
+      "category": "Governance and delivery",
+      "title": "Secret Scan",
+      "action": "Implement secret scan as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers secret scan; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 94,
+      "category": "Governance and delivery",
+      "title": "Release Manifest",
+      "action": "Implement release manifest as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers release manifest; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 95,
+      "category": "Governance and delivery",
+      "title": "Rollback Checkpoint",
+      "action": "Implement rollback checkpoint as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers rollback checkpoint; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 96,
+      "category": "Governance and delivery",
+      "title": "Migration Review",
+      "action": "Implement migration review as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers migration review; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 97,
+      "category": "Governance and delivery",
+      "title": "Access Scope",
+      "action": "Implement access scope as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers access scope; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 98,
+      "category": "Governance and delivery",
+      "title": "Incident Log",
+      "action": "Implement incident log as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers incident log; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 99,
+      "category": "Governance and delivery",
+      "title": "Acceptance Suite",
+      "action": "Implement acceptance suite as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers acceptance suite; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    },
+    {
+      "id": 100,
+      "category": "Governance and delivery",
+      "title": "Production Readiness Gate",
+      "action": "Implement production readiness gate as a typed, persisted, user-scoped capability in the all-in-one workflow.",
+      "acceptance": "Automated test covers production readiness gate; provenance/checksum is visible; failure is fail-closed; orderRoute remains DISABLED.",
+      "priority": "P2",
+      "status": "RECOMMENDED"
+    }
+  ]
+}
